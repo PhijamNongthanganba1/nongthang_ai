@@ -1,5 +1,5 @@
 [build]
-  publish = "."              # ← Current directory is root
+  publish = "."
   command = "npm install"
 
 [build.environment]
@@ -9,20 +9,26 @@
 [functions]
   directory = "netlify/functions"
 
-# API routes
+# API routes - fix these redirects
 [[redirects]]
-  from = "/api/auth/*"
+  from = "/.netlify/functions/auth"
   to = "/.netlify/functions/auth"
   status = 200
 
 [[redirects]]
-  from = "/api/ai/*"
+  from = "/.netlify/functions/ai"
   to = "/.netlify/functions/ai"
   status = 200
 
 [[redirects]]
-  from = "/api/designs/*"
+  from = "/.netlify/functions/designs"
   to = "/.netlify/functions/designs"
+  status = 200
+
+# Or use this simpler approach:
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
   status = 200
 
 # SPA routing
@@ -30,22 +36,3 @@
   from = "/*"
   to = "/index.html"
   status = 200
-
-# Security headers (keep as is)
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-
-[[headers]]
-  for = "/js/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "/css/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
