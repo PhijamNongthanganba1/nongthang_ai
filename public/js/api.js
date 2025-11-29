@@ -1,6 +1,6 @@
 class ApiService {
     constructor() {
-        this.baseUrl = '/api'; // Same domain - no CORS issues!
+        this.baseUrl = ''; // Empty - use relative paths
     }
 
     async request(endpoint, options = {}) {
@@ -22,19 +22,21 @@ class ApiService {
         }
 
         try {
-            const response = await fetch(`${this.baseUrl}${endpoint}`, config);
+            // Use absolute path to Netlify functions
+            const response = await fetch(`/.netlify/functions${endpoint}`, config);
             
-            // Handle non-JSON responses
             const contentType = response.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {
-                throw new Error('Server returned non-JSON response');
+                const text = await response.text();
+                console.error('Non-JSON response:', text.substring(0, 200));
+                throw new Error('Server returned HTML instead of JSON');
             }
             
             const data = await response.json();
 
             if (!response.ok) {
                 if (response.status === 402) {
-                    throw new Error(data.error || 'Insufficient credits. Please upgrade your plan.');
+                    throw new Error(data.error || 'Insufficient credits');
                 }
                 if (response.status === 401) {
                     localStorage.removeItem('authToken');
@@ -48,127 +50,41 @@ class ApiService {
             return data;
         } catch (error) {
             console.error('API request failed:', error);
-            
-            if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-                throw new Error('Network error: Cannot connect to server. Please check your internet connection.');
-            }
-            
             throw error;
         }
     }
 
-    // Health check
-    async checkHealth() {
-        return this.request('/ai/health');
-    }
-
     // Authentication
     async signup(userData) {
-        return this.request('/auth/signup', {
+        return this.request('/auth', {
             method: 'POST',
-            body: userData
+            body: { ...userData, action: 'signup' }
         });
     }
 
     async login(credentials) {
-        return this.request('/auth/login', {
+        return this.request('/auth', {
             method: 'POST',
-            body: credentials
+            body: { ...credentials, action: 'login' }
         });
     }
 
     async verifyToken() {
-        return this.request('/auth/verify', {
-            method: 'POST'
+        return this.request('/auth', {
+            method: 'POST',
+            body: { action: 'verify' }
         });
     }
 
-    // User management
-    async getProfile() {
-        // For now, return mock data - you can extend this later
-        const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-        return {
-            success: true,
-            user: {
-                ...user,
-                credits: 100,
-                usage: { images: 0, videos: 0 }
-            }
-        };
-    }
-
-    async upgradePlan(plan) {
-        // Mock upgrade for free tier
-        return {
-            success: true,
-            message: `Upgraded to ${plan} plan successfully!`,
-            plan: plan
-        };
-    }
-
-    // AI Features
+    // Keep other methods the same...
     async generateImage(prompt, style = 'digital-art', width = 1024, height = 1024) {
-        return this.request('/ai/generate-image', {
+        return this.request('/ai', {
             method: 'POST',
-            body: { prompt, style, width, height }
+            body: { action: 'generate-image', prompt, style, width, height }
         });
     }
 
-    async removeBackground(imageData) {
-        return this.request('/ai/remove-background', {
-            method: 'POST',
-            body: { image: imageData }
-        });
-    }
-
-    async generateVideo(text, imageUrl = null, voiceType = 'en_female_1') {
-        return this.request('/ai/generate-video', {
-            method: 'POST',
-            body: { text, image_url: imageUrl, voice_type: voiceType }
-        });
-    }
-
-    async generateCV(userData, templateType = 'modern') {
-        return this.request('/ai/generate-cv', {
-            method: 'POST',
-            body: { user_data: userData, template_type: templateType }
-        });
-    }
-
-    // Design management
-    async saveDesign(designData) {
-        return this.request('/designs', {
-            method: 'POST',
-            body: designData
-        });
-    }
-
-    async getDesigns() {
-        return this.request('/designs');
-    }
-
-    async getDesign(id) {
-        return this.request(`/designs/${id}`);
-    }
-
-    async deleteDesign(id) {
-        return this.request(`/designs/${id}`, {
-            method: 'DELETE'
-        });
-    }
+    // ... rest of your methods
 }
 
-// Create global instance
 window.apiService = new ApiService();
-
-// Test connection on load
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('AI Design Studio API Service initialized');
-    
-    // Optional: Test health check
-    window.apiService.checkHealth().then(health => {
-        console.log('✅ Backend health:', health.status);
-    }).catch(error => {
-        console.log('ℹ️ Backend health check:', error.message);
-    });
-});
