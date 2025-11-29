@@ -39,11 +39,10 @@
         </div>
     </div>
 
-    <script src="js/utils.js"></script>
     <script src="js/auth.js"></script>
     <script>
         // Check if already logged in
-        if (window.authManager.isAuthenticated()) {
+        if (window.authManager && window.authManager.isAuthenticated()) {
             window.location.href = 'dashboard.html';
         }
 
@@ -55,12 +54,7 @@
 
             // Basic validation
             if (!email || !password) {
-                utils.showAlert('Please fill in all fields', 'error');
-                return;
-            }
-
-            if (!utils.validateEmail(email)) {
-                utils.showAlert('Please enter a valid email address', 'error');
+                showAlert('Please fill in all fields', 'error');
                 return;
             }
 
@@ -72,25 +66,38 @@
             submitBtn.disabled = true;
 
             try {
-                const result = await authManager.login(email, password);
+                const result = await window.authManager.login({
+                    email: email,
+                    password: password
+                });
                 
                 if (result.success) {
-                    utils.showAlert('Login successful! Redirecting...', 'success');
+                    showAlert(result.message, 'success');
+                    
+                    // Save user data
+                    window.authManager.setUserData(result.token, result.user);
+                    
+                    // Redirect to dashboard
                     setTimeout(() => {
                         window.location.href = 'dashboard.html';
                     }, 1000);
                 } else {
-                    utils.showAlert(result.error || 'Login failed', 'error');
+                    showAlert(result.error || 'Login failed', 'error');
                 }
             } catch (error) {
-                utils.showAlert('Server error. Please try again.', 'error');
                 console.error('Login error:', error);
+                showAlert(error.message, 'error');
             } finally {
                 // Restore button
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
             }
         });
+
+        // Simple alert function
+        function showAlert(message, type = 'info') {
+            alert(`[${type.toUpperCase()}] ${message}`);
+        }
     </script>
 </body>
 </html>
