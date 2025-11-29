@@ -1,15 +1,37 @@
 [build]
-  publish = "."
-  command = "echo 'No build process needed'"
+  publish = "public"
+  command = "npm install"
 
 [build.environment]
   NODE_VERSION = "18"
+  NODE_ENV = "production"
 
+[functions]
+  directory = "netlify/functions"
+
+# API routes
+[[redirects]]
+  from = "/api/auth/*"
+  to = "/.netlify/functions/auth"
+  status = 200
+
+[[redirects]]
+  from = "/api/ai/*"
+  to = "/.netlify/functions/ai"
+  status = 200
+
+[[redirects]]
+  from = "/api/designs/*"
+  to = "/.netlify/functions/designs"
+  status = 200
+
+# SPA routing
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
+# Security headers
 [[headers]]
   for = "/*"
   [headers.values]

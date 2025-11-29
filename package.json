@@ -1,0 +1,17 @@
+{
+  "name": "ai-design-studio",
+  "version": "2.0.0",
+  "description": "AI Design Studio - 100% Free Netlify Deployment",
+  "scripts": {
+    "build": "echo 'No build process'",
+    "dev": "echo 'Run netlify dev for local development'"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "node-fetch": "^2.6.9"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

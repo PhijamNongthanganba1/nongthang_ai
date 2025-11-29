@@ -1,18 +1,6 @@
 class ApiService {
     constructor() {
-        this.baseUrl = this.getApiUrl();
-    }
-
-    getApiUrl() {
-        const hostname = window.location.hostname;
-        
-        // Development
-        if (hostname === 'localhost' || hostname === '127.0.0.1') {
-            return 'http://localhost:8000/api';
-        }
-        
-        // Production - UPDATE THIS AFTER DEPLOYMENT
-        return 'https://ai-design-studio-api.up.railway.app/api';
+        this.baseUrl = '/api'; // Same domain - no CORS issues!
     }
 
     async request(endpoint, options = {}) {
@@ -69,38 +57,53 @@ class ApiService {
         }
     }
 
-    // User methods
+    // Health check
+    async checkHealth() {
+        return this.request('/ai/health');
+    }
+
+    // Authentication
+    async signup(userData) {
+        return this.request('/auth/signup', {
+            method: 'POST',
+            body: userData
+        });
+    }
+
+    async login(credentials) {
+        return this.request('/auth/login', {
+            method: 'POST',
+            body: credentials
+        });
+    }
+
+    async verifyToken() {
+        return this.request('/auth/verify', {
+            method: 'POST'
+        });
+    }
+
+    // User management
     async getProfile() {
-        return this.request('/user/profile');
+        // For now, return mock data - you can extend this later
+        const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        return {
+            success: true,
+            user: {
+                ...user,
+                credits: 100,
+                usage: { images: 0, videos: 0 }
+            }
+        };
     }
 
     async upgradePlan(plan) {
-        return this.request('/user/upgrade', {
-            method: 'POST',
-            body: { plan }
-        });
-    }
-
-    // Design methods
-    async saveDesign(designData) {
-        return this.request('/designs', {
-            method: 'POST',
-            body: designData
-        });
-    }
-
-    async getDesigns() {
-        return this.request('/designs');
-    }
-
-    async getDesign(id) {
-        return this.request(`/designs/${id}`);
-    }
-
-    async deleteDesign(id) {
-        return this.request(`/designs/${id}`, {
-            method: 'DELETE'
-        });
+        // Mock upgrade for free tier
+        return {
+            success: true,
+            message: `Upgraded to ${plan} plan successfully!`,
+            plan: plan
+        };
     }
 
     // AI Features
@@ -132,20 +135,40 @@ class ApiService {
         });
     }
 
-    // Utility methods
-    async checkHealth() {
-        try {
-            const response = await fetch(`${this.baseUrl.replace('/api', '')}/health`);
-            return await response.json();
-        } catch (error) {
-            throw new Error('Cannot connect to server');
-        }
+    // Design management
+    async saveDesign(designData) {
+        return this.request('/designs', {
+            method: 'POST',
+            body: designData
+        });
     }
 
-    updateApiUrl(newUrl) {
-        this.baseUrl = newUrl;
-        console.log('API URL updated to:', this.baseUrl);
+    async getDesigns() {
+        return this.request('/designs');
+    }
+
+    async getDesign(id) {
+        return this.request(`/designs/${id}`);
+    }
+
+    async deleteDesign(id) {
+        return this.request(`/designs/${id}`, {
+            method: 'DELETE'
+        });
     }
 }
 
+// Create global instance
 window.apiService = new ApiService();
+
+// Test connection on load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('AI Design Studio API Service initialized');
+    
+    // Optional: Test health check
+    window.apiService.checkHealth().then(health => {
+        console.log('✅ Backend health:', health.status);
+    }).catch(error => {
+        console.log('ℹ️ Backend health check:', error.message);
+    });
+});
