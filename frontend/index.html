@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Design Studio - Create Amazing Designs with AI</title>
+    <meta name="description" content="Professional AI-powered design studio. Create stunning graphics, social media posts, and marketing materials with unlimited FREE AI generation.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="float">
+                <h1>🎨 AI Design Studio</h1>
+                <p>Create professional designs with the power of AI<br>100% FREE • No limits • No credit card required</p>
+            </div>
+            <div class="cta-buttons">
+                <a href="signup.html" class="btn-large btn-primary">
+                    <i class="fas fa-rocket"></i> Get Started Free
+                </a>
+                <a href="login.html" class="btn-large btn-secondary">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h3>∞</h3>
+                <p>Unlimited AI Generations</p>
+            </div>
+            <div class="stat-item">
+                <h3>100%</h3>
+                <p>Free Forever</p>
+            </div>
+            <div class="stat-item">
+                <h3>20+</h3>
+                <p>Professional Templates</p>
+            </div>
+            <div class="stat-item">
+                <h3>0$</h3>
+                <p>No Hidden Costs</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <h2>✨ Powerful Features</h2>
+        <p class="subtitle">Everything you need to create amazing designs</p>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <i class="fas fa-magic"></i>
+                <h3>AI Image Generation</h3>
+                <p>Generate stunning images from text prompts using advanced AI technology.</p>
+            </div>
+
+            <div class="feature-card">
+                <i class="fas fa-cut"></i>
+                <h3>Background Removal</h3>
+                <p>Instantly remove backgrounds from images with AI precision.</p>
+            </div>
+
+            <div class="feature-card">
+                <i class="fas fa-video"></i>
+                <h3>Text to Video</h3>
+                <p>Create talking head videos from text with realistic AI voices.</p>
+            </div>
+
+            <div class="feature-card">
+                <i class="fas fa-file-alt"></i>
+                <h3>AI CV Builder</h3>
+                <p>Generate professional resumes and CVs with AI-powered content.</p>
+            </div>
+
+            <div class="feature-card">
+                <i class="fas fa-layer-group"></i>
+                <h3>Professional Templates</h3>
+                <p>Start with beautiful ready-made templates for all your design needs.</p>
+            </div>
+
+            <div class="feature-card">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h3>Multiple File Upload</h3>
+                <p>Upload and edit multiple images at once. Drag & drop support included.</p>
+            </div>
+
+            <div class="feature-card">
+                <i class="fas fa-save"></i>
+                <h3>Cloud Storage</h3>
+                <p>Save your designs securely and access them from anywhere, anytime.</p>
+            </div>
+
+            <div class="feature-card">
+                <i class="fas fa-download"></i>
+                <h3>High Quality Export</h3>
+                <p>Export your designs in PNG or JPG with multiple resolution options.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2>Ready to Create?</h2>
+        <p>Join thousands of designers creating amazing content every day</p>
+        <a href="signup.html" class="btn-large btn-primary">
+            <i class="fas fa-rocket"></i> Start Creating Now - It's FREE!
+        </a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="logo"><i class="fas fa-wand-magic-sparkles"></i> AI Design Studio</div>
+        <p>Professional AI-powered design platform</p>
+        <p>100% Free • No Credit Card • Unlimited Designs</p>
+        <p style="margin-top: 20px;">
+            <a href="signup.html">Sign Up</a> •
+            <a href="login.html">Login</a> •
+            <a href="dashboard.html">Dashboard</a>
+        </p>
+        <p style="margin-top: 40px; font-size: 14px;">© 2025 AI Design Studio. All rights reserved.</p>
+    </footer>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Check if already logged in
+        if (window.authManager && window.authManager.isAuthenticated()) {
+            // Show different buttons if logged in
+            const ctaButtons = document.querySelectorAll('.cta-buttons');
+            ctaButtons.forEach(buttons => {
+                buttons.innerHTML = `
+                    <a href="dashboard.html" class="btn-large btn-primary">
+                        <i class="fas fa-th-large"></i> Go to Dashboard
+                    </a>
+                    <a href="studio.html" class="btn-large btn-secondary">
+                        <i class="fas fa-paint-brush"></i> Open Studio
+                    </a>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

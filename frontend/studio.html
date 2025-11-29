@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Design Studio Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Toolbar -->
+        <div class="top-toolbar">
+            <div class="logo"><i class="fas fa-wand-magic-sparkles"></i> DesignAI Pro</div>
+
+            <div class="toolbar-group">
+                <button class="btn btn-icon" onclick="app.addText()" title="Add Text">
+                    <i class="fas fa-font"></i>
+                </button>
+                <button class="btn btn-icon" onclick="app.addRectangle()" title="Add Rectangle">
+                    <i class="fas fa-square"></i>
+                </button>
+                <button class="btn btn-icon" onclick="app.addCircle()" title="Add Circle">
+                    <i class="fas fa-circle"></i>
+                </button>
+            </div>
+
+            <div class="toolbar-divider"></div>
+
+            <div class="toolbar-group">
+                <button class="btn btn-icon" onclick="app.deleteSelected()" title="Delete">
+                    <i class="fas fa-trash"></i>
+                </button>
+                <button class="btn btn-icon" onclick="app.undo()" title="Undo">
+                    <i class="fas fa-undo"></i>
+                </button>
+                <button class="btn btn-icon" onclick="app.redo()" title="Redo">
+                    <i class="fas fa-redo"></i>
+                </button>
+            </div>
+
+            <div class="toolbar-divider"></div>
+
+            <div class="toolbar-group size-inputs">
+                <input type="number" id="canvasWidth" value="1080" placeholder="Width">
+                <span>×</span>
+                <input type="number" id="canvasHeight" value="1080" placeholder="Height">
+                <button class="btn" onclick="app.resizeCanvas()">Apply</button>
+            </div>
+
+            <div style="margin-left: auto;"></div>
+
+            <div class="toolbar-group">
+                <button class="btn btn-primary" onclick="app.showExportModal()">
+                    <i class="fas fa-download"></i> Export
+                </button>
+                <button class="btn btn-success" onclick="goToDashboard()">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </button>
+                <button class="btn btn-danger" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Sidebar -->
+            <div class="left-sidebar">
+                <div class="sidebar-tabs">
+                    <button class="sidebar-tab active" data-tab="templates">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button class="sidebar-tab" data-tab="ai">
+                        <i class="fas fa-magic"></i>
+                    </button>
+                    <button class="sidebar-tab" data-tab="cv">
+                        <i class="fas fa-file-alt"></i>
+                    </button>
+                    <button class="sidebar-tab" data-tab="upload">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </button>
+                </div>
+
+                <div class="sidebar-content">
+                    <!-- Templates Tab -->
+                    <div id="templatesTab" class="tab-content active">
+                        <div class="section-title">Templates</div>
+                        <div class="template-grid">
+                            <div class="template-card" onclick="app.loadTemplate('instagram')">
+                                <i class="fab fa-instagram"></i>
+                                <div>Instagram Post</div>
+                            </div>
+                            <div class="template-card" onclick="app.loadTemplate('story')">
+                                <i class="fas fa-mobile-alt"></i>
+                                <div>Story</div>
+                            </div>
+                            <div class="template-card" onclick="app.loadTemplate('facebook')">
+                                <i class="fab fa-facebook"></i>
+                                <div>Facebook</div>
+                            </div>
+                            <div class="template-card" onclick="app.loadTemplate('twitter')">
+                                <i class="fab fa-twitter"></i>
+                                <div>Twitter</div>
+                            </div>
+                            <div class="template-card" onclick="app.loadTemplate('youtube')">
+                                <i class="fab fa-youtube"></i>
+                                <div>YouTube</div>
+                            </div>
+                            <div class="template-card" onclick="app.loadTemplate('linkedin')">
+                                <i class="fab fa-linkedin"></i>
+                                <div>LinkedIn</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Features Tab -->
+                    <div id="aiTab" class="tab-content">
+                        <div class="section-title">AI Magic Tools</div>
+                        
+                        <!-- Text to Image -->
+                        <div class="ai-feature-card" onclick="app.showImageGenerator()">
+                            <div class="ai-feature-icon">
+                                <i class="fas fa-image"></i>
+                            </div>
+                            <div class="ai-feature-content">
+                                <h4>Text to Image</h4>
+                                <p>Generate stunning images from text descriptions</p>
+                            </div>
+                        </div>
+
+                        <!-- Background Removal -->
+                        <div class="ai-feature-card" onclick="app.removeBackground()">
+                            <div class="ai-feature-icon">
+                                <i class="fas fa-cut"></i>
+                            </div>
+                            <div class="ai-feature-content">
+                                <h4>Remove Background</h4>
+                                <p>Instantly remove backgrounds from images</p>
+                            </div>
+                        </div>
+
+                        <!-- Text to Video -->
+                        <div class="ai-feature-card" onclick="app.showVideoGenerator()">
+                            <div class="ai-feature-icon">
+                                <i class="fas fa-video"></i>
+                            </div>
+                            <div class="ai-feature-content">
+                                <h4>Text to Video</h4>
+                                <p>Create talking head videos from text</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CV Builder Tab -->
+                    <div id="cvTab" class="tab-content">
+                        <div class="section-title">AI CV Builder</div>
+                        <div class="cv-builder">
+                            <div class="form-section">
+                                <h4>Personal Information</h4>
+                                <div class="form-group">
+                                    <label>Full Name</label>
+                                    <input type="text" id="cvName" placeholder="John Doe">
+                                </div>
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" id="cvEmail" placeholder="john@example.com">
+                                </div>
+                                <div class="form-group">
+                                    <label>Phone</label>
+                                    <input type="tel" id="cvPhone" placeholder="+1 (555) 123-4567">
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h4>Professional Summary</h4>
+                                <textarea id="cvSummary" rows="3" placeholder="Experienced professional with expertise in..."></textarea>
+                            </div>
+
+                            <div class="form-section">
+                                <h4>Work Experience</h4>
+                                <textarea id="cvExperience" rows="4" placeholder="• Senior Developer at Company (2020-2023)&#10;• Junior Developer at Startup (2018-2020)"></textarea>
+                            </div>
+
+                            <div class="form-section">
+                                <h4>Skills</h4>
+                                <textarea id="cvSkills" rows="2" placeholder="JavaScript, Python, React, Node.js, Project Management"></textarea>
+                            </div>
+
+                            <div class="cv-actions">
+                                <button class="btn btn-primary" onclick="app.generateCV()">
+                                    <i class="fas fa-magic"></i> Generate CV
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upload Tab -->
+                    <div id="uploadTab" class="tab-content">
+                        <div class="section-title">Upload Image</div>
+                        <input type="file" id="imageUpload" accept="image/*" style="margin-bottom: 15px;">
+                        <button class="btn btn-primary" onclick="app.uploadImage()" style="width: 100%;">
+                            <i class="fas fa-upload"></i> Upload Image
+                        </button>
+                        
+                        <div class="section-title" style="margin-top: 20px;">Recent Uploads</div>
+                        <div id="uploadGrid" class="upload-grid">
+                            <!-- Uploaded images will appear here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Canvas Workspace -->
+            <div class="canvas-workspace">
+                <div class="canvas-container">
+                    <canvas id="canvas"></canvas>
+                </div>
+                
+                <!-- Canvas Controls -->
+                <div class="canvas-controls">
+                    <button class="btn btn-icon" onclick="app.zoomOut()" title="Zoom Out">
+                        <i class="fas fa-search-minus"></i>
+                    </button>
+                    <div class="zoom-display" id="zoomLevel">100%</div>
+                    <button class="btn btn-icon" onclick="app.zoomIn()" title="Zoom In">
+                        <i class="fas fa-search-plus"></i>
+                    </button>
+                    <button class="btn btn-icon" onclick="app.fitToScreen()" title="Fit to Screen">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Properties Panel -->
+            <div class="right-panel">
+                <div class="panel-header">
+                    <div class="panel-title">Properties</div>
+                </div>
+                <div class="panel-content" id="propertiesPanel">
+                    <div style="text-align: center; color: #8e9caf; margin-top: 50px;">
+                        <i class="fas fa-mouse-pointer" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>Select an object to edit properties</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="exportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Export Design</h3>
+                <button class="modal-close" onclick="app.closeExportModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="property-label">Format</label>
+                    <select id="exportFormat" onchange="app.toggleJpgQuality()">
+                        <option value="png">PNG (High Quality)</option>
+                        <option value="jpeg">JPG (Smaller File)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="property-label">Export Size</label>
+                    <select id="exportScale">
+                        <option value="1">1x - Original Size</option>
+                        <option value="2">2x - High Resolution</option>
+                        <option value="3">3x - Ultra HD</option>
+                    </select>
+                </div>
+
+                <div id="jpgQualityDiv" style="display: none;">
+                    <label class="property-label">JPG Quality</label>
+                    <input type="range" id="jpgQuality" min="0.1" max="1" step="0.1" value="0.9" oninput="app.updateQualityLabel()">
+                    <div style="text-align: center; color: #8e9caf; font-size: 12px; margin-bottom: 15px;">
+                        <span id="jpgQualityValue">90</span>%
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="app.closeExportModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="app.confirmExport()">
+                    <i class="fas fa-download"></i> Download
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Image Generator Modal -->
+    <div id="imageGeneratorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>AI Image Generator</h3>
+                <button class="modal-close" onclick="app.closeImageGenerator()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="property-label">Prompt</label>
+                    <textarea id="aiPrompt" rows="4" placeholder="Describe what you want to generate..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="property-label">Style</label>
+                    <select id="aiStyle">
+                        <option value="digital-art">Digital Art</option>
+                        <option value="photographic">Photographic</option>
+                        <option value="anime">Anime</option>
+                        <option value="fantasy-art">Fantasy Art</option>
+                        <option value="3d-model">3D Model</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="app.closeImageGenerator()">Cancel</button>
+                <button class="btn btn-primary" onclick="app.generateImage()">
+                    <i class="fas fa-magic"></i> Generate Image
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Generator Modal -->
+    <div id="videoGeneratorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>AI Video Generator</h3>
+                <button class="modal-close" onclick="app.closeVideoGenerator()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="property-label">Text Script</label>
+                    <textarea id="videoText" rows="4" placeholder="Enter the text for the video..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="property-label">Voice Type</label>
+                    <select id="videoVoice">
+                        <option value="en_female_1">Female Voice 1</option>
+                        <option value="en_male_1">Male Voice 1</option>
+                        <option value="en_female_2">Female Voice 2</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="app.closeVideoGenerator()">Cancel</button>
+                <button class="btn btn-primary" onclick="app.generateVideo()">
+                    <i class="fas fa-video"></i> Generate Video
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/canvas-manager.js"></script>
+    <script src="js/ai-features.js"></script>
+    <script src="js/cv-builder.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+        // Initialize application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check authentication
+            if (!window.authManager.isAuthenticated()) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            window.app = new App();
+            await app.initialize();
+        });
+
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                authManager.logout();
+            }
+        }
+    </script>
+</body>
+</html>
