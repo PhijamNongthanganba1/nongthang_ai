@@ -1,5 +1,5 @@
 [build]
-  publish = "public"
+  publish = "public"  # ← Change this from "frontend" to "public"
   command = "npm install"
 
 [build.environment]
