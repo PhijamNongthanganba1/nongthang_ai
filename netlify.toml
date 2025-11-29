@@ -8,7 +8,7 @@
 [functions]
   directory = "netlify/functions"
 
-# API routes
+# API routes - FIXED: Use exact paths
 [[redirects]]
   from = "/api/auth"
   to = "/.netlify/functions/auth"

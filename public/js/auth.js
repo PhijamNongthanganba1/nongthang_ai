@@ -1,6 +1,6 @@
 class AuthManager {
     constructor() {
-        this.apiBase = '/api';
+        this.apiBase = '/.netlify/functions';
     }
 
     async request(endpoint, options = {}) {
@@ -24,19 +24,12 @@ class AuthManager {
             const response = await fetch(url, config);
             console.log('📡 Response status:', response.status);
             
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('❌ Server error:', errorText);
-                
-                try {
-                    const errorData = JSON.parse(errorText);
-                    throw new Error(errorData.error || `Server error: ${response.status}`);
-                } catch (e) {
-                    throw new Error(`Server error (${response.status}): ${errorText.substring(0, 100)}`);
-                }
-            }
-            
             const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.error || `Server error: ${response.status}`);
+            }
+
             console.log('✅ API Response:', data);
             return data;
 
