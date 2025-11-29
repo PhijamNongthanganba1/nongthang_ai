@@ -4,7 +4,6 @@ class AuthManager {
     }
 
     async request(endpoint, options = {}) {
-        // ✅ FIXED: Define config FIRST
         const config = {
             method: 'POST',
             headers: {
@@ -25,6 +24,7 @@ class AuthManager {
             const response = await fetch(url, config);
             console.log('📡 Response status:', response.status);
             
+            // Check if response is JSON
             const contentType = response.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {
                 const text = await response.text();
@@ -48,7 +48,6 @@ class AuthManager {
 
     async signup(userData) {
         return this.request('/auth', {
-            method: 'POST',
             body: {
                 action: 'signup',
                 name: userData.name,
@@ -60,7 +59,6 @@ class AuthManager {
 
     async login(credentials) {
         return this.request('/auth', {
-            method: 'POST',
             body: {
                 action: 'login',
                 email: credentials.email,
@@ -76,7 +74,6 @@ class AuthManager {
         }
 
         return this.request('/auth', {
-            method: 'POST',
             body: { action: 'verify' },
             headers: {
                 'Authorization': `Bearer ${token}`

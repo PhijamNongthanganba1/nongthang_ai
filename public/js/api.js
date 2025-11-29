@@ -1,6 +1,6 @@
 class ApiService {
     constructor() {
-        this.baseUrl = ''; // Empty - use relative paths
+        this.baseUrl = '/.netlify/functions';
     }
 
     async request(endpoint, options = {}) {
@@ -22,8 +22,7 @@ class ApiService {
         }
 
         try {
-            // Use absolute path to Netlify functions
-            const response = await fetch(`/.netlify/functions${endpoint}`, config);
+            const response = await fetch(`${this.baseUrl}${endpoint}`, config);
             
             const contentType = response.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {
@@ -76,15 +75,54 @@ class ApiService {
         });
     }
 
-    // Keep other methods the same...
+    // AI Features
     async generateImage(prompt, style = 'digital-art', width = 1024, height = 1024) {
-        return this.request('/ai', {
+        return this.request('/ai/generate-image', {
             method: 'POST',
-            body: { action: 'generate-image', prompt, style, width, height }
+            body: { prompt, style, width, height }
         });
     }
 
-    // ... rest of your methods
+    async removeBackground(imageData) {
+        return this.request('/ai/remove-background', {
+            method: 'POST',
+            body: { image: imageData }
+        });
+    }
+
+    async generateVideo(text, imageUrl = null, voiceType = 'en_female_1') {
+        return this.request('/ai/generate-video', {
+            method: 'POST',
+            body: { text, image_url: imageUrl, voice_type: voiceType }
+        });
+    }
+
+    async generateCV(userData, templateType = 'modern') {
+        return this.request('/ai/generate-cv', {
+            method: 'POST',
+            body: { user_data: userData, template_type: templateType }
+        });
+    }
+
+    // Designs
+    async getDesigns() {
+        return this.request('/designs', {
+            method: 'GET'
+        });
+    }
+
+    async saveDesign(name, data) {
+        return this.request('/designs', {
+            method: 'POST',
+            body: { name, data }
+        });
+    }
+
+    async deleteDesign(designId) {
+        return this.request(`/designs/${designId}`, {
+            method: 'DELETE'
+        });
+    }
 }
 
 window.apiService = new ApiService();
