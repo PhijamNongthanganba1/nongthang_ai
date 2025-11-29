@@ -1,5 +1,5 @@
 [build]
-  publish = "public"  # ← Change this from "frontend" to "public"
+  publish = "."              # ← Current directory is root
   command = "npm install"
 
 [build.environment]
@@ -31,7 +31,7 @@
   to = "/index.html"
   status = 200
 
-# Security headers
+# Security headers (keep as is)
 [[headers]]
   for = "/*"
   [headers.values]
