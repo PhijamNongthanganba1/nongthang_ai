@@ -4,35 +4,36 @@ class AuthManager {
     }
 
     async request(endpoint, options = {}) {
+        const url = `${this.apiBase}${endpoint}`;
+        console.log('🔐 Calling:', url, options.body);
+        
         const config = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 ...options.headers
             },
-            ...options
+            body: JSON.stringify(options.body || {})
         };
 
-        if (options.body && typeof options.body === 'object') {
-            config.body = JSON.stringify(options.body);
-        }
-
-        const url = `${this.apiBase}${endpoint}`;
-        console.log('🔐 Making request to:', url);
-        
         try {
             const response = await fetch(url, config);
-            console.log('📡 Response status:', response.status);
+            
+            // Handle non-JSON responses
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await response.text();
+                throw new Error(`Server returned: ${text.substring(0, 100)}`);
+            }
             
             const data = await response.json();
             
             if (!response.ok) {
-                throw new Error(data.error || `Server error: ${response.status}`);
+                throw new Error(data.error || `Request failed with status ${response.status}`);
             }
-
-            console.log('✅ API Response:', data);
+            
+            console.log('✅ Success:', data);
             return data;
-
         } catch (error) {
             console.error('❌ Request failed:', error);
             throw error;
@@ -75,9 +76,7 @@ class AuthManager {
     }
 
     isAuthenticated() {
-        const token = localStorage.getItem('authToken');
-        const user = localStorage.getItem('currentUser');
-        return !!(token && user);
+        return !!localStorage.getItem('authToken');
     }
 
     getCurrentUser() {
@@ -101,4 +100,19 @@ class AuthManager {
     }
 }
 
+// Initialize auth manager
 window.authManager = new AuthManager();
+
+// Auto-check auth on page load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔐 Auth Manager initialized');
+    
+    if (window.authManager.isAuthenticated()) {
+        console.log('✅ User is authenticated');
+        // Verify token on page load
+        window.authManager.verifyToken().catch(error => {
+            console.warn('Token verification failed:', error);
+            window.authManager.logout();
+        });
+    }
+});

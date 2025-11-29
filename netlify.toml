@@ -8,23 +8,6 @@
 [functions]
   directory = "netlify/functions"
 
-# API routes - FIXED: Use exact paths
-[[redirects]]
-  from = "/api/auth"
-  to = "/.netlify/functions/auth"
-  status = 200
-
-[[redirects]]
-  from = "/api/ai/*"
-  to = "/.netlify/functions/ai"
-  status = 200
-
-[[redirects]]
-  from = "/api/designs/*"
-  to = "/.netlify/functions/designs"
-  status = 200
-
-# SPA routes
 [[redirects]]
   from = "/*"
   to = "/index.html"
