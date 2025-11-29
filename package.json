@@ -1,15 +1,8 @@
 {
-  "name": "ai-design-studio",
-  "version": "2.0.0",
-  "description": "AI Design Studio - Complete Authentication System",
-  "scripts": {
-    "build": "echo 'No build process'"
-  },
+  "name": "auth-function",
+  "version": "1.0.0",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2"
-  },
-  "engines": {
-    "node": ">=18"
   }
 }

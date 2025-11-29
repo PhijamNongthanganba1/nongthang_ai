@@ -25,7 +25,6 @@ exports.handler = async (event) => {
         };
       }
 
-      // Email validation
       if (!validateEmail(email)) {
         return {
           statusCode: 400,
@@ -36,7 +35,6 @@ exports.handler = async (event) => {
         };
       }
 
-      // Password validation
       if (!validatePassword(password)) {
         return {
           statusCode: 400,
@@ -47,7 +45,6 @@ exports.handler = async (event) => {
         };
       }
 
-      // Check if user already exists
       if (users.has(email.toLowerCase())) {
         return {
           statusCode: 409,
@@ -58,7 +55,6 @@ exports.handler = async (event) => {
         };
       }
 
-      // Hash password and create user
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = {
         name: name.trim(),
@@ -72,7 +68,6 @@ exports.handler = async (event) => {
 
       users.set(email.toLowerCase(), user);
 
-      // Generate JWT token
       const token = jwt.sign(
         { 
           email: user.email,
@@ -114,7 +109,6 @@ exports.handler = async (event) => {
 
       const user = users.get(email.toLowerCase());
       
-      // Check if user exists and password matches
       if (!user || !(await bcrypt.compare(password, user.password))) {
         return {
           statusCode: 401,
@@ -125,11 +119,9 @@ exports.handler = async (event) => {
         };
       }
 
-      // Update last login
       user.lastLogin = new Date().toISOString();
       users.set(email.toLowerCase(), user);
 
-      // Generate JWT token
       const token = jwt.sign(
         { 
           email: user.email,
@@ -212,7 +204,6 @@ exports.handler = async (event) => {
       }
     }
 
-    // Invalid action
     return {
       statusCode: 400,
       headers,

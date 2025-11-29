@@ -1,6 +1,6 @@
 class AuthManager {
     constructor() {
-        this.apiBase = '/.netlify/functions';
+        this.apiBase = '/api';
     }
 
     async request(endpoint, options = {}) {
@@ -18,30 +18,30 @@ class AuthManager {
         }
 
         const url = `${this.apiBase}${endpoint}`;
-        console.log('🔐 Making request to:', url, config);
+        console.log('🔐 Making request to:', url);
         
         try {
             const response = await fetch(url, config);
             console.log('📡 Response status:', response.status);
             
-            // Check if response is JSON
-            const contentType = response.headers.get('content-type');
-            if (!contentType || !contentType.includes('application/json')) {
-                const text = await response.text();
-                console.error('❌ Non-JSON response:', text.substring(0, 200));
-                throw new Error('Server error: Received HTML instead of JSON');
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('❌ Server error:', errorText);
+                
+                try {
+                    const errorData = JSON.parse(errorText);
+                    throw new Error(errorData.error || `Server error: ${response.status}`);
+                } catch (e) {
+                    throw new Error(`Server error (${response.status}): ${errorText.substring(0, 100)}`);
+                }
             }
             
             const data = await response.json();
-            console.log('✅ Auth API Response:', data);
-
-            if (!response.ok) {
-                throw new Error(data.error || `Server error: ${response.status}`);
-            }
-
+            console.log('✅ API Response:', data);
             return data;
+
         } catch (error) {
-            console.error('❌ Full error details:', error);
+            console.error('❌ Request failed:', error);
             throw error;
         }
     }
@@ -81,9 +81,10 @@ class AuthManager {
         });
     }
 
-    // Utility methods
     isAuthenticated() {
-        return !!localStorage.getItem('authToken');
+        const token = localStorage.getItem('authToken');
+        const user = localStorage.getItem('currentUser');
+        return !!(token && user);
     }
 
     getCurrentUser() {
@@ -107,20 +108,4 @@ class AuthManager {
     }
 }
 
-// Create global instance
 window.authManager = new AuthManager();
-
-// Auto-check authentication on page load
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔐 Auth Manager initialized');
-    
-    if (window.authManager.isAuthenticated()) {
-        console.log('✅ User is authenticated');
-        window.authManager.verifyToken().catch(error => {
-            console.warn('Token verification failed:', error);
-            window.authManager.logout();
-        });
-    } else {
-        console.log('ℹ️ User not authenticated');
-    }
-});
