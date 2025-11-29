@@ -52,62 +52,56 @@
     <script src="js/utils.js"></script>
     <script src="js/auth.js"></script>
     <script>
-        document.getElementById('signupForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // In signup.html, find the form submit handler and replace it with:
+document.getElementById('signupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-            const name = document.getElementById('name').value.trim();
-            const email = document.getElementById('email').value.trim().toLowerCase();
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim().toLowerCase();
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
 
-            // Validation
-            if (!name || !email || !password || !confirmPassword) {
-                utils.showAlert('Please fill in all fields', 'error');
-                return;
-            }
+    // Validation
+    if (!name || !email || !password || !confirmPassword) {
+        alert('Please fill in all fields');
+        return;
+    }
 
-            if (!utils.validateEmail(email)) {
-                utils.showAlert('Please enter a valid email address', 'error');
-                return;
-            }
+    if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+    }
 
-            if (!utils.validatePassword(password)) {
-                utils.showAlert('Password must be at least 8 characters with uppercase letter and number', 'error');
-                return;
-            }
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    
+    // Show loading
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+    submitBtn.disabled = true;
 
-            if (password !== confirmPassword) {
-                utils.showAlert('Passwords do not match', 'error');
-                return;
-            }
-
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-            
-            // Show loading state
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
-            submitBtn.disabled = true;
-
-            try {
-                const result = await authManager.signup(name, email, password);
-                
-                if (result.success) {
-                    utils.showAlert('Account created successfully! Redirecting...', 'success');
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html';
-                    }, 1500);
-                } else {
-                    utils.showAlert(result.error || 'Signup failed', 'error');
-                }
-            } catch (error) {
-                utils.showAlert('Server error. Please try again.', 'error');
-                console.error('Signup error:', error);
-            } finally {
-                // Restore button
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }
+    try {
+        const result = await window.authManager.signup({
+            name: name,
+            email: email,
+            password: password
         });
-    </script>
-</body>
-</html>
+        
+        if (result.success) {
+            alert('Account created successfully!');
+            // Save token and user data
+            localStorage.setItem('authToken', result.token);
+            localStorage.setItem('currentUser', JSON.stringify(result.user));
+            // Redirect to dashboard
+            window.location.href = 'dashboard.html';
+        } else {
+            alert(result.error || 'Signup failed');
+        }
+    } catch (error) {
+        console.error('Signup error:', error);
+        alert('Signup failed: ' + error.message);
+    } finally {
+        // Restore button
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
+});
