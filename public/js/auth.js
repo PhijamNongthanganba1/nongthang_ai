@@ -4,6 +4,7 @@ class AuthManager {
     }
 
     async request(endpoint, options = {}) {
+        // Define config first
         const config = {
             headers: {
                 'Content-Type': 'application/json',
@@ -16,11 +17,13 @@ class AuthManager {
             config.body = JSON.stringify(options.body);
         }
 
+        const url = `${this.apiBase}${endpoint}`;
+        console.log('🔐 Making request to:', url);
+        
         try {
-            console.log('🔐 Auth API Call:', endpoint, options.body);
-            const response = await fetch(`${this.apiBase}${endpoint}`, config);
+            const response = await fetch(url, config);
+            console.log('📡 Response status:', response.status);
             
-            // Check if response is JSON
             const contentType = response.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {
                 const text = await response.text();
@@ -37,7 +40,7 @@ class AuthManager {
 
             return data;
         } catch (error) {
-            console.error('❌ Auth API request failed:', error);
+            console.error('❌ Full error details:', error);
             throw error;
         }
     }
