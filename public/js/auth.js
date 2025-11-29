@@ -4,8 +4,9 @@ class AuthManager {
     }
 
     async request(endpoint, options = {}) {
-        // Define config first
+        // ✅ FIXED: Define config FIRST
         const config = {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 ...options.headers
@@ -18,7 +19,7 @@ class AuthManager {
         }
 
         const url = `${this.apiBase}${endpoint}`;
-        console.log('🔐 Making request to:', url);
+        console.log('🔐 Making request to:', url, config);
         
         try {
             const response = await fetch(url, config);
@@ -28,7 +29,7 @@ class AuthManager {
             if (!contentType || !contentType.includes('application/json')) {
                 const text = await response.text();
                 console.error('❌ Non-JSON response:', text.substring(0, 200));
-                throw new Error('Server error: Received HTML instead of JSON. Please check if the function is deployed.');
+                throw new Error('Server error: Received HTML instead of JSON');
             }
             
             const data = await response.json();
@@ -99,7 +100,6 @@ class AuthManager {
         window.location.href = 'login.html';
     }
 
-    // Token management
     getToken() {
         return localStorage.getItem('authToken');
     }
@@ -117,11 +117,8 @@ window.authManager = new AuthManager();
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🔐 Auth Manager initialized');
     
-    // Check if user is logged in
     if (window.authManager.isAuthenticated()) {
         console.log('✅ User is authenticated');
-        
-        // Verify token on page load
         window.authManager.verifyToken().catch(error => {
             console.warn('Token verification failed:', error);
             window.authManager.logout();

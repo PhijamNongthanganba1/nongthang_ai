@@ -1,10 +1,9 @@
-// Utility functions for all endpoints
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const SECRET_KEY = process.env.SECRET_KEY || 'your-super-secret-key-change-in-production';
 
-// Simple in-memory store (replace with database later)
+// Simple in-memory storage (replace with database later)
 const users = new Map();
 const designs = new Map();
 let designId = 1;
